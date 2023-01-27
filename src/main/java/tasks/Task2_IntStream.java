@@ -52,5 +52,4 @@ public class Task2_IntStream {
                 .average()
                 .orElseThrow();
     }
-
 }

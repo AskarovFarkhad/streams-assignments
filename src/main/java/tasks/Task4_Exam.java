@@ -2,14 +2,16 @@ package tasks;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Есть грузовик Truck, у которого задана максимальная грузоподьемность.
- *
+ * <p>
  * Грузовики делятся на 3 типа в зависимости от грузоподьемности:
- *  - Pickup        - до 2 тонн
- *  - SmallBoxTruck - до 12 тонн
- *  - SemiTrailer   - до 20 тонн
+ * - Pickup        - до 2 тонн
+ * - SmallBoxTruck - до 12 тонн
+ * - SemiTrailer   - до 20 тонн
  */
 public class Task4_Exam {
 
@@ -23,7 +25,7 @@ public class Task4_Exam {
      * Пример:
      *   1_000 -> Pickup   (для одной тонны достаточно пикапа)
      * </pre>
-     *
+     * <p>
      * Вы можете решить это задание как через Stream, так и через цикл.
      * Какой код выйдет проще и легче для понимания, тот и используйте.
      * <p>
@@ -35,7 +37,9 @@ public class Task4_Exam {
      * @return
      */
     public static TruckType getTypeByWeight(int weight) {
-        throw new PleaseDeleteMeAndImplement();
+        return Stream.of(TruckType.values())
+                .filter(truckType -> truckType.canHandleWeight(weight))
+                .findFirst().orElseThrow(WeightTooHighException::new);
     }
 
     /**
@@ -60,7 +64,9 @@ public class Task4_Exam {
      * @return
      */
     public static Map<TruckType, List<Truck>> groupTrucksByType(List<Truck> trucks) {
-        throw new PleaseDeleteMeAndImplement();
+        return trucks.stream()
+                .collect(Collectors.groupingBy(truck -> Task4_Exam.getTypeByWeight(truck.maxWeightKg),
+                        Collectors.mapping(truck -> truck, Collectors.toList())));
     }
 
     /**
@@ -85,7 +91,9 @@ public class Task4_Exam {
      * @return
      */
     public static Map<TruckType, Long> countTrucksByType(List<Truck> trucks) {
-        throw new PleaseDeleteMeAndImplement();
+        return trucks.stream()
+                .collect(Collectors.groupingBy(truck -> Task4_Exam.getTypeByWeight(truck.maxWeightKg),
+                        Collectors.counting()));
     }
 
     /**
@@ -93,13 +101,14 @@ public class Task4_Exam {
      */
     public static class Truck {
         int maxWeightKg;
+
         Truck(int maxWeightKg) {
             this.maxWeightKg = maxWeightKg;
         }
 
         @Override
         public String toString() {
-            return "Truck (maxWeightKg=" + maxWeightKg +')';
+            return "Truck (maxWeightKg=" + maxWeightKg + ')';
         }
     }
 
@@ -113,7 +122,7 @@ public class Task4_Exam {
         SmallBoxTruck(12_000),
         SemiTrailer(20_000);
 
-        private int maxLoad;
+        private final int maxLoad;
 
         TruckType(int maxLoad) {
             this.maxLoad = maxLoad;
@@ -129,5 +138,4 @@ public class Task4_Exam {
             super("Weight is too high for any type of vehicle available");
         }
     }
-
 }
